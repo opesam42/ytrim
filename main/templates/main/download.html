@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download Page</title>
+</head>
+<body>
+    <p>Your video is ready</p>
+    {% comment %} <a href="{{ downloadURL }}" download>Download here</a> {% endcomment %}
+    <a href="{{ MEDIA_URL }}downloads/{{ filename }}" download>Download here</a>
+</body>
+</html>
