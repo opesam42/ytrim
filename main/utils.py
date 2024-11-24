@@ -47,9 +47,10 @@ class Video:
                 'concurrent_fragments': 16,  # Download in 16 simultaneous chunks (adjust based on connection)
                 'fragment_retries': 10,  # Retry downloading fragments in case of failure
                 'retry_max': 10,  # Max retries for the download
-                
+
                 # Using user-agent option in yt-dlp to simulate a real browser and bybass YouTubebot detection
-                'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'
+                'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36',
+                'cookies_from_browser': 'chrome',  # Pull cookies from Chrome browser
             }
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                 info_dict = ydl.extract_info(self.url, download=True)
