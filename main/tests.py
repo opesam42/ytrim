@@ -1,13 +1,11 @@
 from django.test import TestCase
-from .misc import Misc
-import re
+from django.conf import settings
+import os
+from dotenv import load_dotenv
 
+load_dotenv()
 # Create your tests here.
+cookies = os.path.join(settings.MEDIA_ROOT, "ytcookies.txt")
+f = open(cookies, 'r')
 
-misc = Misc()
-dd = misc.sanitize_filename("My:Invalid|File*N ame?<>/With\\WeirdChars.mp4")
-result = re.sub(r'\s+', '_', dd)
-# print(result)
-
-encodedString = "https://google.com".encode("utf-8")
-print(encodedString)
+print(f.read())
