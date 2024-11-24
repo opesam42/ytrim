@@ -1,11 +1,11 @@
 from django.conf import settings
 from .misc import Misc
 import yt_dlp
-from moviepy.video.io.ffmpeg_tools import ffmpeg_extract_subclip
 from moviepy.video.io.VideoFileClip import VideoFileClip
-# from moviepy import *
-# from moviepy.video.io.VideoFileClip import VideoFileClip
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 class Video:
     def __init__(self, url):
@@ -30,19 +30,7 @@ class Video:
             misc = Misc()
             custom_name = misc.sanitize_filename( self.getTitle() )
 
-            # start = 3.0
-            # end = 12.0
-
-            # ffmpeg_args = {
-            #     'ffmpeg_i': [
-            #         "-ss", str(start),
-            #         "=to", str(end)
-            #     ]
-            # }
-
             ydl_opts = {
-                # 'external_downloader': 'ffmpeg',
-                # 'external_downloader_args': ffmpeg_args,
                 'outtmpl': f'{self.output_path}{custom_name}.%(ext)s',
                 'concurrent_fragments': 16,  # Download in 16 simultaneous chunks (adjust based on connection)
                 'fragment_retries': 10,  # Retry downloading fragments in case of failure
@@ -50,7 +38,7 @@ class Video:
 
                 # Using user-agent option in yt-dlp to simulate a real browser and bybass YouTubebot detection
                 'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36',
-                'cookies_from_browser': 'chrome',  # Pull cookies from Chrome browser
+                'cookies': os.path.join(settings.MEDIA_ROOT, "ytcookies.txt")
             }
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                 info_dict = ydl.extract_info(self.url, download=True)
