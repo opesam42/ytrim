@@ -22,7 +22,6 @@ def index(request):
         # trim video and get link
         if(trimStart=="") and (trimEnd==""):
             download_link = video.download()
-            time = timeit.timeit(download)
         else:
             if(':' in trimStart) and (':' in trimEnd):
                 download_link = video.trim(trimStart, trimEnd) #for HH:MM:SS format
