@@ -38,7 +38,8 @@ class Video:
 
                 # Using user-agent option in yt-dlp to simulate a real browser and bybass YouTubebot detection
                 'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36',
-                'cookies': os.path.join(settings.MEDIA_ROOT, "ytcookies.txt")
+                'cookies-from-browser': 'chrome',
+                'cookies': os.path.join(settings.MEDIA_ROOT, "ytcookies.txt"),
             }
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                 info_dict = ydl.extract_info(self.url, download=True)
