@@ -17,15 +17,6 @@ class Video:
         self.url = url
         self.output_path = os.path.join(settings.MEDIA_ROOT, "downloads/")
 
-        # for pytube download without bot intervention
-        self.po_token = os.getenv("PO_TOKEN")
-        self.visitor_data = os.getenv("VISITOR_DATA")
-
-    def verifier(self):
-        po_token = os.getenv("PO_TOKEN")
-        visitor_data = os.getenv("VISITOR_DATA")
-        return po_token, visitor_data
-
     def getTitle(self):
         try:
             yt = YouTube( self.url, on_progress_callback=on_progress, use_po_token=True, token_file=os.path.join(settings.MEDIA_ROOT, "file.json") )
