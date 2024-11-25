@@ -1,4 +1,6 @@
 Django==5.0.6
 moviepy==2.0.0
 pathvalidate==3.2.1
+python-dotenv==1.0.1
+pytubefix==8.5.2
 yt_dlp==2024.11.18
