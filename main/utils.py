@@ -9,14 +9,26 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+# https://github.com/JuanBindez/pytubefix/issues/226 for generating token easily
+# https://www.npmjs.com/package/youtube-po-token-generator npm package for automating youtube po-token
+
 class Video:
     def __init__(self, url):
         self.url = url
         self.output_path = os.path.join(settings.MEDIA_ROOT, "downloads/")
 
+        # for pytube download without bot intervention
+        self.po_token = os.getenv("PO_TOKEN")
+        self.visitor_data = os.getenv("VISITOR_DATA")
+
+    def verifier(self):
+        po_token = os.getenv("PO_TOKEN")
+        visitor_data = os.getenv("VISITOR_DATA")
+        return po_token, visitor_data
+
     def getTitle(self):
         try:
-            yt = YouTube( self.url, on_progress_callback=on_progress )
+            yt = YouTube( self.url, on_progress_callback=on_progress, use_po_token=True, token_file=os.path.join(settings.MEDIA_ROOT, "file.json") )
             video_title= yt.title
             return video_title
                 
@@ -32,7 +44,7 @@ class Video:
         custom_name = misc.sanitize_filename( self.getTitle() )
 
         try:
-            yt = YouTube( self.url, on_progress_callback=on_progress )
+            yt = YouTube( self.url, on_progress_callback=on_progress, use_po_token=True, token_file=os.path.join(settings.MEDIA_ROOT, "file.json") )
             stream = yt.streams.get_highest_resolution()
             video_file = stream.download( output_path = self.output_path)
             return video_file
