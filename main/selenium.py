@@ -18,10 +18,22 @@ def fetchPageWithHeaders(url):
     options.add_argument("--no-sandbox")  # Disable sandboxing (can be required on certain systems)
     options.add_argument("user-agent=Mozilla/5.0 (Windows NT 6.1; WOW64; rv:20.0) Gecko/20100101 Firefox/20.0")
 
-    # Explicitly set Chrome binary location
-    # options.binary_location = "/usr/bin/chromium-browser"
-    options.binary_location = "/opt/google/chrome/google-chrome"
-    # options.binary_location = "/usr/bin/google-chrome-stable"
+    possible_locations = [
+    "/usr/bin/google-chrome-stable",  # Default location for Google Chrome
+    "/opt/google/chrome/google-chrome",  # Default location in Docker setups
+    "/usr/local/bin/google-chrome",     # Another common location
+    "/usr/bin/chrome",                  # Another alternative
+    ]
+
+# Try to set the binary location dynamically
+    for location in possible_locations:
+        if os.path.exists(location):
+            options.binary_location = location
+            print(f"Using Chrome binary at: {location}")
+            break
+    else:
+        print("Chrome binary not found in any of the expected locations.")
+    # Optionally handle the case where Chrome isn't found
 
     # Initialize WebDriver (uses the appropriate ChromeDriver version automatically)
     service = Service(ChromeDriverManager().install())

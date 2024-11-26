@@ -8,26 +8,6 @@ import os
 
 # Create your views here.
 def index(request):
-    chrome_path = '/usr/bin/google-chrome-stable'  # Default location, adjust if needed
-
-    if os.path.exists(chrome_path):
-        print(f"Chrome is installed at {chrome_path}")
-    else:
-        print("Chrome is not installed at the expected location.")
-
-    chrome_path2 = '/opt/google/chrome/google-chrome'  # Default location, adjust if needed
-
-    if os.path.exists(chrome_path2):
-        print(f"Chrome is installed at {chrome_path2}")
-    else:
-        print("Chrome is not installed at the expected location.")
-
-    chrome_path3 = '/usr/bin/google-chrome-stable'  # Default location, adjust if needed
-
-    if os.path.exists(chrome_path3):
-        print(f"Chrome is installed at {chrome_path3}")
-    else:
-        print("Chrome is not installed at the expected location.")
 
     if request.method == 'POST':
         videoUrl = request.POST.get('ylink')
