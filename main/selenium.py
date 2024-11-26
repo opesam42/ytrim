@@ -25,6 +25,12 @@ def fetchPageWithHeaders(url):
     "/usr/local/bin/google-chrome",     # Another common location
     "/usr/bin/chrome",                  # Another alternative
     ]
+    possible_chromedriver_locations = [
+    "/usr/bin/chromedriver",            # Common location for chromedriver
+    "/usr/local/bin/chromedriver",      # Another common location
+    "/opt/google/chrome/chromedriver",  # Often used in Docker setups
+    "/usr/lib/chromium-browser/chromedriver"  # If you're using Chromium browser
+    ]
 
 # Try to set the binary location dynamically
     for location in possible_locations:
@@ -36,10 +42,27 @@ def fetchPageWithHeaders(url):
         print("Chrome binary not found in any of the expected locations.")
     # Optionally handle the case where Chrome isn't found
 
-    # Initialize WebDriver (uses the appropriate ChromeDriver version automatically)
-    service = Service("/usr/bin/chromedriver")
-    # service = Service(ChromeDriverManager().install())
-    driver = webdriver.Chrome(service=service, options=options)
+    # Try to find a valid chromedriver
+    chromedriver_path = None
+    for chromedriver_location in possible_chromedriver_locations:
+        if os.path.exists(chromedriver_location):
+            chromedriver_path = chromedriver_location
+            print(f"Using chromedriver at: {chromedriver_path}")
+            break
+
+    if not chromedriver_path:
+        print("Chromedriver not found in any of the expected locations.")
+        # Optionally handle the case where chromedriver isn't found
+
+    # Initialize the WebDriver with the found Chrome binary and chromedriver
+    if chromedriver_path:
+        service = Service(chromedriver_path)
+        driver = webdriver.Chrome(service=service, options=options)
+        # Now you can use the driver as usual
+        # For example:
+        # driver.get("https://www.google.com")
+    else:
+        print("Could not initialize WebDriver due to missing chromedriver.")
 
     try:
         # Open the URL (e.g., YouTube video URL)
