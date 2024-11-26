@@ -31,7 +31,7 @@ RUN apt-get update && apt-get install -y \
     libgdk-pixbuf2.0-0 \
     libxrandr2 \
     libgbm1 \
-    libxdamage1 \ # Added this dependency for Playwright
+    libxdamage1 \
     && rm -rf /var/lib/apt/lists/*
 
 # Set the working directory in the container
