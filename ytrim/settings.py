@@ -129,5 +129,4 @@ MEDIA_URL = 'media/'
 
 MEDIA_ROOT = BASE_DIR / 'media'
 
-if 'RENDER' in os.environ:
-    PORT = "8000" #for render deployment 
+PORT = "8000" #for render deployment 
