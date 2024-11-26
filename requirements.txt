@@ -4,5 +4,6 @@ pathvalidate==3.2.1
 python-dotenv==1.0.1
 pytubefix==8.5.2
 requests==2.32.3
+webdriver_manager==4.0.2
 yt_dlp==2024.11.18
 gunicorn==23.0.0
