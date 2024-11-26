@@ -20,7 +20,7 @@ RUN apt-get update && apt-get install -y \
     libpango-1.0-0 \
     libgdk-pixbuf2.0-0 \
     libx11-xcb1 \
-    # Install missing dependencies for Playwright to run browsers
+    # Additional dependencies for Playwright
     libxfixes3 \
     libxkbcommon0 \
     libcairo2 \
@@ -31,6 +31,7 @@ RUN apt-get update && apt-get install -y \
     libgdk-pixbuf2.0-0 \
     libxrandr2 \
     libgbm1 \
+    libxdamage1 \ # Added this dependency for Playwright
     && rm -rf /var/lib/apt/lists/*
 
 # Set the working directory in the container
