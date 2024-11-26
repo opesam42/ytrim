@@ -2,5 +2,5 @@ services:
   - type: web
     name: my-django-app
     env: python
-    buildCommand: ./render-build.sh
+    # buildCommand: ./render-build.sh
     startCommand: gunicorn ytrim.wsgi:application --bind 0.0.0.0:$PORT
