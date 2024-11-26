@@ -8,8 +8,6 @@ import os
 
 # Create your views here.
 def index(request):
-    f = open( os.path.join(settings.MEDIA_ROOT, "file.json"), "r" )
-    print(f.read())
     if request.method == 'POST':
         videoUrl = request.POST.get('ylink')
         trimStart = request.POST.get('s-time')
