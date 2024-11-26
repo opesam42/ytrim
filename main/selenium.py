@@ -37,7 +37,8 @@ def fetchPageWithHeaders(url):
     # Optionally handle the case where Chrome isn't found
 
     # Initialize WebDriver (uses the appropriate ChromeDriver version automatically)
-    service = Service(ChromeDriverManager().install())
+    service = Service("/usr/bin/chromedriver")
+    # service = Service(ChromeDriverManager().install())
     driver = webdriver.Chrome(service=service, options=options)
 
     try:
