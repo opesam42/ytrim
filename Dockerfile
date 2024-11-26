@@ -1,7 +1,7 @@
-# Use a more complete Python image as a base
-FROM python:3.10-buster
+# Use an official Python image as a base
+FROM python:3.10-slim
 
-# Install dependencies for Playwright and Chromium
+# Update and install dependencies for Playwright and Chromium
 RUN apt-get update && \
     apt-get upgrade -y && \
     apt-get install -y wget curl gnupg2 ca-certificates libnss3 \
@@ -10,7 +10,7 @@ RUN apt-get update && \
                        libxcomposite1 libxrandr2 libgbm1 libpango-1.0-0 \
                        libx11-xcb1 libxfixes3 libxkbcommon0 libcairo2 \
                        libatk1.0-0 libatspi2.0-0 libpangocairo-1.0-0 \
-                       libxdamage1 libXcursor1 libgtk-3-0 libgdk-3-0 \
+                       libxdamage1 libxcursor1 libgtk-3-0 libgdk-pixbuf2.0-0 \
                        libcairo-gobject2 && \
     rm -rf /var/lib/apt/lists/*
 
