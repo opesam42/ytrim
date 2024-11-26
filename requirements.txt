@@ -5,3 +5,4 @@ python-dotenv==1.0.1
 pytubefix==8.5.2
 requests==2.32.3
 yt_dlp==2024.11.18
+gunicorn==23.0.0
