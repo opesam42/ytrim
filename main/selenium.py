@@ -20,7 +20,8 @@ def fetchPageWithHeaders(url):
 
     # Explicitly set Chrome binary location
     # options.binary_location = "/usr/bin/chromium-browser"
-    options.binary_location = "/usr/bin/google-chrome-stable"
+    options.binary_location = "/opt/google/chrome/google-chrome"
+    # options.binary_location = "/usr/bin/google-chrome-stable"
 
     # Initialize WebDriver (uses the appropriate ChromeDriver version automatically)
     service = Service(ChromeDriverManager().install())
