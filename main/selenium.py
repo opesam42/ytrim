@@ -1,9 +1,7 @@
 import sys
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
 import time
 import os
 
@@ -20,19 +18,19 @@ def fetchPageWithHeaders(url):
     options.add_argument("user-agent=Mozilla/5.0 (Windows NT 6.1; WOW64; rv:20.0) Gecko/20100101 Firefox/20.0")
 
     possible_locations = [
-    "/usr/bin/google-chrome-stable",  # Default location for Google Chrome
-    "/opt/google/chrome/google-chrome",  # Default location in Docker setups
-    "/usr/local/bin/google-chrome",     # Another common location
-    "/usr/bin/chrome",                  # Another alternative
+        "/usr/bin/google-chrome-stable",  # Default location for Google Chrome
+        "/opt/google/chrome/google-chrome",  # Default location in Docker setups
+        "/usr/local/bin/google-chrome",     # Another common location
+        "/usr/bin/chrome",                  # Another alternative
     ]
     possible_chromedriver_locations = [
-    "/usr/bin/chromedriver",            # Common location for chromedriver
-    "/usr/local/bin/chromedriver",      # Another common location
-    "/opt/google/chrome/chromedriver",  # Often used in Docker setups
-    "/usr/lib/chromium-browser/chromedriver"  # If you're using Chromium browser
+        "/usr/bin/chromedriver",            # Common location for chromedriver
+        "/usr/local/bin/chromedriver",      # Another common location
+        "/opt/google/chrome/chromedriver",  # Often used in Docker setups
+        "/usr/lib/chromium-browser/chromedriver"  # If you're using Chromium browser
     ]
 
-# Try to set the binary location dynamically
+    # Try to set the binary location dynamically
     for location in possible_locations:
         if os.path.exists(location):
             options.binary_location = location
@@ -40,7 +38,7 @@ def fetchPageWithHeaders(url):
             break
     else:
         print("Chrome binary not found in any of the expected locations.")
-    # Optionally handle the case where Chrome isn't found
+        return None  # Exit early if Chrome is not found
 
     # Try to find a valid chromedriver
     chromedriver_path = None
@@ -52,17 +50,16 @@ def fetchPageWithHeaders(url):
 
     if not chromedriver_path:
         print("Chromedriver not found in any of the expected locations.")
-        # Optionally handle the case where chromedriver isn't found
+        return None  # Exit early if chromedriver is not found
 
     # Initialize the WebDriver with the found Chrome binary and chromedriver
-    if chromedriver_path:
+    try:
         service = Service(chromedriver_path)
         driver = webdriver.Chrome(service=service, options=options)
         # Now you can use the driver as usual
-        # For example:
-        # driver.get("https://www.google.com")
-    else:
-        print("Could not initialize WebDriver due to missing chromedriver.")
+    except Exception as e:
+        print(f"Error initializing WebDriver: {e}")
+        return None  # Exit early if WebDriver fails to initialize
 
     try:
         # Open the URL (e.g., YouTube video URL)
@@ -83,4 +80,5 @@ def fetchPageWithHeaders(url):
 
     finally:
         print("Closing the browser...")
-        driver.quit()  # Close the browser once done
+        if 'driver' in locals():  # Only quit if driver was initialized
+            driver.quit()  # Close the browser once done
