@@ -1,5 +1,6 @@
 from django.conf import settings
 from .misc import Misc
+from .selenium import fetchPageWithHeaders
 from pytubefix import YouTube
 from pytubefix.cli import on_progress
 import yt_dlp
@@ -8,6 +9,7 @@ import os
 # from requests import get
 import requests
 from dotenv import load_dotenv
+ 
 
 load_dotenv()
 
@@ -27,22 +29,12 @@ class Video:
             'Referer': 'https://www.youtube.com/',
         }
 
-    def fetchPageWithHeaders(self):
-        try:
-            response = requests.get(self.url, headers=self.headers)
-            if response.status_code == 200:
-                return response.content
-            else:
-                print(f"Failed to fetch page. Status code: {response.status_code}")
-                return None
-        except Exception as e:
-            print(f"Error fetching page {str(e)}")
-            return None
+    
 
     def getTitle(self):
         try:
             #fetch video metadata
-            raw_page_data = self.fetchPageWithHeaders()
+            raw_page_data = fetchPageWithHeaders(self.url)
             
             if raw_page_data:
                 yt = YouTube( self.url, on_progress_callback=on_progress, use_po_token=True, token_file=os.path.join(settings.MEDIA_ROOT, "file.json") )
@@ -64,7 +56,7 @@ class Video:
 
         try:
             #fetch video metadata
-            raw_page_data = self.fetchPageWithHeaders()
+            raw_page_data = fetchPageWithHeaders(self.url)
             
             if raw_page_data:
                 yt = YouTube( self.url, on_progress_callback=on_progress, use_po_token=True, token_file=os.path.join(settings.MEDIA_ROOT, "file.json") )
