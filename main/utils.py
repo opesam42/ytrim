@@ -5,6 +5,7 @@ from pytubefix.cli import on_progress
 import yt_dlp
 from moviepy.video.io.VideoFileClip import VideoFileClip
 import os
+import requests
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -16,12 +17,33 @@ class Video:
     def __init__(self, url):
         self.url = url
         self.output_path = os.path.join(settings.MEDIA_ROOT, "downloads/")
+        self.headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:20.0) Gecko/20100101 Firefox/20.0'
+        }
+
+    def fetchPageWithHeaders(self):
+        try:
+            response = requests.get(self.url, headers=self.headers)
+            if response.status_code == 200:
+                return response.content
+            else:
+                print(f"Failed to fetch page. Status code: {response.status_code}")
+                return None
+        except Exception as e:
+            print(f"Error fetching page {str(e)}")
+            return None
 
     def getTitle(self):
         try:
-            yt = YouTube( self.url, on_progress_callback=on_progress, use_po_token=True, token_file=os.path.join(settings.MEDIA_ROOT, "file.json") )
-            video_title= yt.title
-            return video_title
+            #fetch video metadata
+            raw_page_data = self.fetchPageWithHeaders()
+            
+            if raw_page_data:
+                yt = YouTube( self.url, on_progress_callback=on_progress, use_po_token=True, token_file=os.path.join(settings.MEDIA_ROOT, "file.json") )
+                video_title= yt.title
+                return video_title
+            else:
+                return None
                 
         except Exception as e:
             print(str(e))
@@ -35,10 +57,16 @@ class Video:
         custom_name = misc.sanitize_filename( self.getTitle() )
 
         try:
-            yt = YouTube( self.url, on_progress_callback=on_progress, use_po_token=True, token_file=os.path.join(settings.MEDIA_ROOT, "file.json") )
-            stream = yt.streams.get_highest_resolution()
-            video_file = stream.download( output_path = self.output_path)
-            return video_file
+            #fetch video metadata
+            raw_page_data = self.fetchPageWithHeaders()
+            
+            if raw_page_data:
+                yt = YouTube( self.url, on_progress_callback=on_progress, use_po_token=True, token_file=os.path.join(settings.MEDIA_ROOT, "file.json") )
+                stream = yt.streams.get_highest_resolution()
+                video_file = stream.download( output_path = self.output_path)
+                return video_file
+            else:
+                return None
             
         except Exception as e:
             print(f'Error during video download: {str(e)}')
