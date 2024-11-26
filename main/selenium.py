@@ -1,4 +1,3 @@
-import sys
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
@@ -75,8 +74,7 @@ def fetchPageWithHeaders(url):
         return page_source
 
     except Exception as e:
-        print(f"An error occurred: {str(e)}")
-        sys.exit(f"Selenium failed to connect. Error details: {e}")
+        print(f"Selenium failed to connect: {str(e)}")
 
     finally:
         print("Closing the browser...")
