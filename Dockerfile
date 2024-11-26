@@ -28,13 +28,20 @@ RUN curl -sSL https://dl.google.com/linux/direct/google-chrome-stable_current_am
     dpkg -i google-chrome.deb || apt-get -f install -y && \
     rm google-chrome.deb
 
+# Set the working directory in the container
+WORKDIR /ytrim
+
+# Copy only requirements first to optimize layer caching
+COPY requirements.txt /ytrim/
+
 # Install Python dependencies
-WORKDIR /app
-COPY requirements.txt /app/
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy your app's code
-COPY . /app/
+# Copy the entire Django project into the container
+COPY . /ytrim/
 
-# Command to run your app
-CMD ["python", "your_script.py"]
+# Expose the port the app runs on
+EXPOSE 8000
+
+# Use gunicorn for production, or you can use Django's development server for local testing
+CMD ["gunicorn", "ytrim.wsgi:application", "--bind", "0.0.0.0:8000"]
