@@ -6,6 +6,7 @@ from pytubefix.cli import on_progress
 import yt_dlp
 from moviepy.video.io.VideoFileClip import VideoFileClip
 import os
+import sys
 # from requests import get
 import requests
 from dotenv import load_dotenv
@@ -41,11 +42,13 @@ class Video:
                 video_title= yt.title
                 return video_title
             else:
-                return None
+                # return None
+                sys.exit("page not fetched")
                 
         except Exception as e:
             print(str(e))
-            return "Not working"
+            sys.exit("title not fetched")
+            # return "Not working"
         
     def download(self):
         
@@ -64,11 +67,13 @@ class Video:
                 video_file = stream.download( output_path = self.output_path)
                 return video_file
             else:
-                return None
+                # return None
+                sys.exit("page not fetched")
             
         except Exception as e:
             print(f'Error during video download: {str(e)}')
             print(os.path.join(self.output_path))
+            sys.exit("Video not downloaded")
 
 
     def trim(self, start, end):
