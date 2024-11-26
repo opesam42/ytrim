@@ -19,7 +19,8 @@ def fetchPageWithHeaders(url):
     options.add_argument("user-agent=Mozilla/5.0 (Windows NT 6.1; WOW64; rv:20.0) Gecko/20100101 Firefox/20.0")
 
     # Explicitly set Chrome binary location
-    options.binary_location = "/usr/bin/chromium-browser"
+    # options.binary_location = "/usr/bin/chromium-browser"
+    options.binary_location = "/usr/bin/google-chrome-stable"
 
     # Initialize WebDriver (uses the appropriate ChromeDriver version automatically)
     service = Service(ChromeDriverManager().install())
