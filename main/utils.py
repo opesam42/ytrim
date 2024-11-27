@@ -48,6 +48,7 @@ class Video:
             if isinstance(raw_page_data, str):  # Check if raw data is a valid string
                 yt = YouTube(self.url, on_progress_callback=on_progress, use_po_token=True, token_file=os.path.join(settings.MEDIA_ROOT, "file.json"))
                 video_title = yt.title
+                logging.info(f"video title: {video_title}")
                 return video_title
             else:
                 logging.warning("Invalid data received. Expected a string or valid page data.")
