@@ -1,5 +1,6 @@
 from django.conf import settings
 from .misc import Misc
+# from .selenium import fetchPageWithHeaders
 from pytubefix import YouTube
 from pytubefix.cli import on_progress
 import yt_dlp
@@ -8,7 +9,8 @@ import os
 # from requests import get
 import requests
 from dotenv import load_dotenv
-from .bypassBot import fetchPageWithHeaders
+import asyncio
+ 
 
 load_dotenv()
 
@@ -19,31 +21,26 @@ class Video:
     def __init__(self, url):
         self.url = url
         self.output_path = os.path.join(settings.MEDIA_ROOT, "downloads/")
+        self.headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:20.0) Gecko/20100101 Firefox/20.0',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+            'Accept-Encoding': 'gzip, deflate, br',
+            'Accept-Language': 'en-US,en;q=0.5',
+            'Connection': 'keep-alive',
+            'Referer': 'https://www.youtube.com/',
+        }
 
-    def fetchPageWithHeaders(self):
-        try:
-            response = requests.get(self.url, headers=self.headers)
-            if response.status_code == 200:
-                return response.content
-            else:
-                print(f"Failed to fetch page. Status code: {response.status_code}")
-                return None
-        except Exception as e:
-            print(f"Error fetching page {str(e)}")
-            return None
+    
 
     def getTitle(self):
         try:
-            page_data = fetchPageWithHeaders(self.url)
-            if page_data:
-                yt = YouTube( self.url, on_progress_callback=on_progress, use_po_token=True, token_file=os.path.join(settings.MEDIA_ROOT, "file.json") )
-                video_title= yt.title
-                return video_title
-            else:
-                return None
+            
+            yt = YouTube( self.url, on_progress_callback=on_progress, use_po_token=True, token_file=os.path.join(settings.MEDIA_ROOT, "file.json") )
+            video_title= yt.title
+            return video_title
                 
         except Exception as e:
-            print(str(e))
+            print(f'title not found: {str(e)}')
             return "Not working"
         
     def download(self):
@@ -54,15 +51,12 @@ class Video:
         custom_name = misc.sanitize_filename( self.getTitle() )
 
         try:
-            page_data = fetchPageWithHeaders(self.url)
-            if page_data:
-                yt = YouTube( self.url, on_progress_callback=on_progress, use_po_token=True, token_file=os.path.join(settings.MEDIA_ROOT, "file.json") )
-                stream = yt.streams.get_highest_resolution()
-                video_file = stream.download( output_path = self.output_path)
-                return video_file
-            else:
-                return None
-        
+
+            yt = YouTube( self.url, on_progress_callback=on_progress, use_po_token=True, token_file=os.path.join(settings.MEDIA_ROOT, "file.json") )
+            stream = yt.streams.get_highest_resolution()
+            video_file = stream.download( output_path = self.output_path)
+            return video_file
+
             
         except Exception as e:
             print(f'Error during video download: {str(e)}')
@@ -97,3 +91,5 @@ class Video:
         os.remove(video) #delete original video after trimming
 
         return output_file
+
+        

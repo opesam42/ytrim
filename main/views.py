@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.conf import settings
 from django.http import HttpResponse
-from .utils3 import Video
+from .utils import Video
 import urllib.parse
 import os
 
@@ -17,7 +17,7 @@ def index(request):
         video = Video(videoUrl)
         
         videoTitle = video.getTitle() #get title
-        print(f'Downloading {videoTitle}...')
+        print(f'Downloading {videoTitle} let go')
         
         # trim video and get link
         if(trimStart=="") and (trimEnd==""):
