@@ -1,20 +1,19 @@
 {
-    "version": 2,
-    "builds": [
-      {
-        "src": "ytrim/wsgi.py",
-        "use": "@vercel/python",
-        "config": {
-          "maxLambdaSize": "50mb",
-          "runtime": "python3.10"
-        }
+  "version": 2,
+  "builds": [
+    {
+      "src": "build.sh",
+      "use": "@vercel/python",
+      "config": {
+        "maxLambdaSize": "50mb",
+        "runtime": "python3.10"
       }
-    ],
-    "routes": [
-      {
-        "src": "/(.*)",
-        "dest": "ytrim/wsgi.py"
-      }
-    ],
-    "outputDirectory": "staticfiles"
-  }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/ytrim/wsgi.py"
+    }
+  ]
+}
