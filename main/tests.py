@@ -1,20 +1,8 @@
-from django.test import TestCase
-from django.conf import settings
-import os
-from pytubefix import YouTube
-from pytubefix.cli import on_progress
+from fake_useragent import UserAgent
+import requests
 
-
-def download():
-    try:
-        yt = YouTube( "https://youtu.be/1aA1WGON49E?si=ennN790mLT26NXQW", on_progress_callback=on_progress )
-        print(yt.title)
-        stream = yt.streams.get_highest_resolution()
-        video_file = stream.download( output_path = os.path.join(settings.MEDIA_ROOT, "downloads/") )
-        return video_file
-        
-    except Exception as e:
-        print(f'Error during video download: {str(e)}')
-        print( os.path.join(os.path.join(settings.MEDIA_ROOT, "downloads/")) )
-
-download()
+ua = UserAgent()
+headers = {'User-Agent': ua.random}
+response = requests.get('https://www.youtube.com/shorts/3AEyyqFvQ2g', headers=headers)
+print(response.status_code)
+# print(response.text)
