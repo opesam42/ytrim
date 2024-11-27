@@ -27,4 +27,4 @@ COPY . /ytrim/
 EXPOSE 8000
 
 # Use gunicorn for production, or you can use Django's development server for local testing
-CMD ["gunicorn", "ytrim.wsgi:application", "--bind", "0.0.0.0:8000"]
+CMD ["gunicorn", "ytrim.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "4", "--threads", "2", "--timeout", "600"]
