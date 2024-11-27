@@ -20,18 +20,6 @@ class Video:
         self.url = url
         self.output_path = os.path.join(settings.MEDIA_ROOT, "downloads/")
 
-    def fetchPageWithHeaders(self):
-        try:
-            response = requests.get(self.url, headers=self.headers)
-            if response.status_code == 200:
-                return response.content
-            else:
-                print(f"Failed to fetch page. Status code: {response.status_code}")
-                return None
-        except Exception as e:
-            print(f"Error fetching page {str(e)}")
-            return None
-
     def getTitle(self):
         try:
             page_data = fetchPageWithHeaders(self.url)
