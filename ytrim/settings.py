@@ -129,4 +129,4 @@ MEDIA_URL = 'media/'
 
 MEDIA_ROOT = BASE_DIR / 'media'
 
-# PORT = "8000" #for render deployment 
+PORT = "8000" #for render deployment 
