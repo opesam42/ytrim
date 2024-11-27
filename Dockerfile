@@ -1,17 +1,10 @@
 # Use an official Python image as a base
 FROM python:3.10-slim
 
-# Update and install dependencies for Playwright and Chromium
+# Install dependencies for Playwright and Chromium
 RUN apt-get update && \
     apt-get upgrade -y && \
-    apt-get install -y wget curl gnupg2 ca-certificates libnss3 \
-                       libgdk-pixbuf2.0-0 libxss1 libasound2 \
-                       libatk-bridge2.0-0 libatk1.0-0 libcups2 \
-                       libxcomposite1 libxrandr2 libgbm1 libpango-1.0-0 \
-                       libx11-xcb1 libxfixes3 libxkbcommon0 libcairo2 \
-                       libatk1.0-0 libatspi2.0-0 libpangocairo-1.0-0 \
-                       libxdamage1 libxcursor1 libgtk-3-0 libgdk-pixbuf2.0-0 \
-                       libcairo-gobject2 && \
+    apt-get install -y wget curl gnupg2 ca-certificates libnss3 && \
     rm -rf /var/lib/apt/lists/*
 
 # Set the working directory in the container
@@ -23,9 +16,9 @@ COPY requirements.txt /ytrim/
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Install Playwright and the required browsers (Chromium, Webkit, Firefox)
+# Install Playwright and the required browsers (Chromium, Webkit, Firefox), with system dependencies
 RUN python -m pip install playwright && \
-    python -m playwright install
+    python -m playwright install --with-deps chromium
 
 # Copy the entire Django project into the container
 COPY . /ytrim/
