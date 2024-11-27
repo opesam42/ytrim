@@ -1,28 +1,25 @@
-from django.http import JsonResponse
-from django.conf import settings
 import os
+from django.conf import settings
+from django.http import JsonResponse
+from moviepy.video.io.VideoFileClip import VideoFileClip
 from pytubefix import YouTube
 from pytubefix.cli import on_progress
-from moviepy.video.io.VideoFileClip import VideoFileClip
 from .misc import Misc
-import requests
+from .selenium import fetchPageWithHeaders
 from dotenv import load_dotenv
 
+# Load environment variables
 load_dotenv()
 
-# Custom exceptions for better error handling
+# Custom exception classes for better error handling
 class VideoNotFoundError(Exception):
-    """Custom exception for when the video is not found."""
     pass
 
 class VideoDownloadError(Exception):
-    """Custom exception for download errors."""
     pass
 
 class VideoTrimError(Exception):
-    """Custom exception for trimming errors."""
     pass
-
 
 class Video:
     def __init__(self, url):
@@ -49,13 +46,16 @@ class Video:
             else:
                 raise VideoNotFoundError("Page not found or video not available.")
         except VideoNotFoundError as e:
-            return JsonResponse({'error': str(e)}, status=404)
+            return "Video not found"
         except Exception as e:
-            return JsonResponse({'error': f'Error fetching title: {str(e)}'}, status=500)
-
+            return f"Error fetching title: {str(e)}"
+        
     def download(self):
         misc = Misc()
-        custom_name = misc.sanitize_filename(self.getTitle())
+        custom_name = misc.sanitize_filename(self.getTitle())  # This will now be a string or error message
+
+        if custom_name == "Video not found" or "Error fetching title" in custom_name:
+            return JsonResponse({'error': custom_name}, status=404)
 
         try:
             # Fetch video metadata
@@ -100,25 +100,5 @@ class Video:
         except Exception as e:
             return JsonResponse({'error': f'Error trimming video: {str(e)}'}, status=500)
 
-        os.remove(video)  # delete original video after trimming
+        os.remove(video)  # Delete the original video after trimming
         return output_file
-
-
-# Example Django view to handle video operations
-def video_view(request):
-    try:
-        video_url = request.GET.get('url')
-        video = Video(video_url)
-        trimmed_video = video.trim(start=0, end=30)
-        if isinstance(trimmed_video, JsonResponse):
-            return trimmed_video  # Return error response if trimming failed
-        return JsonResponse({'message': 'Video trimmed successfully', 'video': trimmed_video})
-    except VideoNotFoundError as e:
-        return JsonResponse({'error': str(e)}, status=404)
-    except VideoDownloadError as e:
-        return JsonResponse({'error': str(e)}, status=400)
-    except VideoTrimError as e:
-        return JsonResponse({'error': str(e)}, status=500)
-    except Exception as e:
-        return JsonResponse({'error': f'Unexpected error: {str(e)}'}, status=500)
-
