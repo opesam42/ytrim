@@ -1,4 +1,5 @@
 from django.conf import settings
+import logging
 from .misc import Misc
 from .selenium import fetchPageWithHeaders
 from pytubefix import YouTube
@@ -11,7 +12,7 @@ import requests
 from dotenv import load_dotenv
 import asyncio
  
-
+logging.basicConfig(level=logging.INFO)  # Set the log level to INFO
 load_dotenv()
 
 # https://github.com/JuanBindez/pytubefix/issues/226 for generating token easily
@@ -34,23 +35,27 @@ class Video:
 
     def getTitle(self):
         try:
-            #fetch video metadata
+            # Fetch video metadata
             raw_page_data = fetchPageWithHeaders(self.url)
+
+            if not raw_page_data:
+                logging.info("Page not found")
+                return None
             
+            logging.debug(f"Raw page data type: {type(raw_page_data)}")  # Change to debug-level log
             
-            if raw_page_data:
-                print(raw_page_data)
-                yt = YouTube( self.url, on_progress_callback=on_progress, use_po_token=True, token_file=os.path.join(settings.MEDIA_ROOT, "file.json") )
-                video_title= yt.title
+            # Ensure the data fetched is valid and not a JsonResponse
+            if isinstance(raw_page_data, str):  # Check if raw data is a valid string
+                yt = YouTube(self.url, on_progress_callback=on_progress, use_po_token=True, token_file=os.path.join(settings.MEDIA_ROOT, "file.json"))
+                video_title = yt.title
                 return video_title
             else:
-                print("page not found")
+                logging.warning("Invalid data received. Expected a string or valid page data.")
                 return None
-                
+
         except Exception as e:
+            logging.error(f"Title not fetched: {str(e)}")
             raise Exception(f"Title not fetched: {str(e)}")
-            # print(f'title not found: {str(e)}')
-            # return "Not working"
         
     def download(self):
         
