@@ -16,8 +16,11 @@ def index(request):
         #create an instance of the Video class
         video = Video(videoUrl)
         
-        videoTitle = video.getTitle() #get title
-        print(f'Downloading {videoTitle} let go')
+        videoTitle = video.getTitle()[0] #get title
+        ytChannel = video.getTitle()[1] #get youtube channel
+        thumbnailUrl = video.getThumbnail() #get thumbnail image
+        print(f'Downloading {videoTitle}')
+        print(f'thumbnail image {thumbnailUrl}')
         
         # trim video and get link
         if(trimStart=="") and (trimEnd==""):
@@ -29,7 +32,7 @@ def index(request):
                 download_link = video.trim( int(trimStart), int(trimEnd) ) #for seconds only format
 
         encoded_link = urllib.parse.quote(download_link)
-        return redirect(f'download?link={encoded_link}')
+        return redirect(f'download?link={encoded_link}&videoTitle={videoTitle}&ytChannel={ytChannel}&thumbnail={thumbnailUrl}')
 
     
     return render(request, 'main/index.html')
@@ -39,10 +42,19 @@ def download(request):
     if download_link:
         decoded_link = urllib.parse.unquote(download_link)
         filename = os.path.basename(decoded_link)
+
+        # get other parameters
+        videoTitle = request.GET.get('videoTitle')
+        ytChannel = request.GET.get('ytChannel')
+        thumbnailUrl=request.GET.get('thumbnail')
         return render(request, 'main/download.html', {
             'downloadURL': download_link,
             'filename': filename,
             'MEDIA_URL': settings.MEDIA_URL,
+
+            'videoTitle':videoTitle,
+            'ytChannel': ytChannel,
+            'thumbnailUrl': thumbnailUrl,
             })
     else:
         return redirect(index)

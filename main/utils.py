@@ -20,37 +20,41 @@ class Video:
         self.url = url
         self.output_path = os.path.join(settings.MEDIA_ROOT, "downloads/")
 
+    def youtubeLib(self):
+        return YouTube( 
+            self.url,
+            on_progress_callback=on_progress,
+            use_po_token=True,
+            token_file=os.path.join(settings.MEDIA_ROOT, "file.json")
+        )
+
     def getTitle(self):
         try:
-            page_data = fetchPageWithHeaders(self.url)
-            if page_data:
-                yt = YouTube( self.url, on_progress_callback=on_progress, use_po_token=True, token_file=os.path.join(settings.MEDIA_ROOT, "file.json") )
-                video_title= yt.title
-                return video_title
-            else:
-                return None
+            yt = self.youtubeLib()
+            video_info = [yt.title, yt.author]
+            return video_info
                 
         except Exception as e:
             print(str(e))
             return "Not working"
+
+    def getThumbnail(self):
+        yt = self.youtubeLib()
+        thumbnail = yt.thumbnail_url.replace('default.jpg', 'hqdefault.jpg')
+        return thumbnail
+        
         
     def download(self):
-        
-
         # output_path = os.path.join(settings.MEDIA_ROOT, "downloads/")
         misc = Misc()
-        custom_name = misc.sanitize_filename( self.getTitle() )
+        video_title = self.getTitle()[0]
+        custom_name = misc.sanitize_filename( video_title )
 
         try:
-            page_data = fetchPageWithHeaders(self.url)
-            if page_data:
-                yt = YouTube( self.url, on_progress_callback=on_progress, use_po_token=True, token_file=os.path.join(settings.MEDIA_ROOT, "file.json") )
-                stream = yt.streams.get_highest_resolution()
-                video_file = stream.download( output_path = self.output_path)
-                return video_file
-            else:
-                return None
-        
+            yt = self.youtubeLib()
+            stream = yt.streams.get_highest_resolution()
+            video_file = stream.download( output_path = self.output_path)
+            return video_file
             
         except Exception as e:
             print(f'Error during video download: {str(e)}')
@@ -61,7 +65,8 @@ class Video:
         # video = os.path.join(settings.MEDIA_ROOT, "downloads/", "20-Sec-Timer.mp4")
         video = self.download()
         misc = Misc()
-        custom_name = misc.sanitize_filename( self.getTitle() )
+        video_title = self.getTitle()[0]
+        custom_name = misc.sanitize_filename( video_title )
 
         if os.path.exists(video):
             print(f'{video} found')
@@ -81,6 +86,8 @@ class Video:
                 )
         except Exception as e:
             print(f'Error trimming: {str(e)}')
+
+
 
         os.remove(video) #delete original video after trimming
 
