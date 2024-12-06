@@ -7,3 +7,4 @@ pytubefix==8.5.2
 Requests==2.32.3
 yt_dlp==2024.12.6
 gunicorn==23.0.0
+whitenoise==6.7.0
