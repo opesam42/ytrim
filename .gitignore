@@ -1,6 +1,4 @@
 /.env
-/build.sh
-/render-build.sh
 /node_modules
 /staticfiles/admin
 
