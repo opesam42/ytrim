@@ -2,7 +2,7 @@
   "version": 2,
   "builds": [
     {
-      "src": "build.sh",
+      "src": "ytrim/wsgi.py",
       "use": "@vercel/python",
       "config": {
         "maxLambdaSize": "50mb",
@@ -15,5 +15,6 @@
       "src": "/(.*)",
       "dest": "/ytrim/wsgi.py"
     }
-  ]
+  ],
+  "outputDirectory": "staticfiles"
 }
