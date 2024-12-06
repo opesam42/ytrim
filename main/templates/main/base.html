@@ -1,0 +1,23 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <title>{% block title %} {% endblock %} </title>
+</head>
+
+<body class="flex flex-col">
+    <header>
+        <div class="w-full text-center text-3xl font-bold bg-gray-400 py-6">Y-TRIM</div>
+    </header>
+
+    <main class="max-w-[600px] self-center px-4">
+        {% block main-content %}
+        {% endblock %}
+    </main>
+    
+</body>
+</html>

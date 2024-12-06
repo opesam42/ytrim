@@ -1,30 +1,31 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trim Your Youtube Video</title>
-</head>
-<body>
-    <form method="post">
-        {% csrf_token %}
-        <fieldset>
-            <label for="ylink">Enter Link</label>
-            <input type="url" name="ylink">
-        </fieldset>
+{% extends "main/base.html" %}
 
-        <fieldset>
-            <label for="s-time">Start Time</label>
-            <input type="text" name="s-time">
-        </fieldset>
+{% block title %} Trim your YouTube Video {% endblock %}
 
-        <fieldset>
-            <label for="e-time">End Time</label>
-            <input type="text" name="e-time">
-        </fieldset>
-        
-        <input type="submit" name="Download">
-        
-    </form>
-</body>
-</html>
+{% block main-content %}
+
+        <form method="post" class="flex flex-col gap-4">
+            {% csrf_token %}
+            <fieldset class="flex flex-col gap-1">
+                <label for="ylink" class="text-sm font-medium">Youtube Link</label>
+                <input type="url" name="ylink" placeholder="Enter Youtube Video Link" class="block border rounded-md border-gray-800 p-1">
+            </fieldset>
+
+            <fieldset class="flex justify-between">
+                <div class="w-1/3 flex flex-col gap-1">
+                    <label for="s-time" class="text-sm font-medium">Start Time</label>
+                    <input type="text" name="s-time" placeholder="HH:MM:SS" class="block border rounded-md border-gray-800 p-1">
+                </div>
+
+                <div class="w-1/3 flex flex-col gap-1">
+                    <label for="e-time" class="text-sm font-medium">End Time</label>
+                    <input type="text" name="e-time" placeholder="HH:MM:SS" class="block border rounded-md border-gray-800 p-1">
+                </div>
+            </fieldset>
+            
+            <input type="submit" name="proceed" value="Proceed"  class="block bg-red-600 text-white rounded-md shadow-sm text-lg p-1  hover:bg-red-700">
+
+            {% comment %} <img src="https://i.ytimg.com/vi/eB2aY7qxLFE/sddefault.jpg?sqp=-oaymwEmCIAFEOAD8quKqQMa8AEB-AG2CIACgA-KAgwIABABGD4gYChlMA8=&rs=AOn4CLBFGb8BwxLvZKrS7dRlI3D-om41og"> {% endcomment %}
+            
+        </form>
+{% endblock %}

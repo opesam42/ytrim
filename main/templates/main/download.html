@@ -1,13 +1,26 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Download Page</title>
-</head>
-<body>
-    <p>Your video is ready</p>
-    {% comment %} <a href="{{ downloadURL }}" download>Download here</a> {% endcomment %}
-    <a href="{{ MEDIA_URL }}downloads/{{ filename }}" download>Download here</a>
-</body>
-</html>
+{% extends "main/base.html" %}
+
+{% block title %} Download Your Video {% endblock %}
+
+{% block main-content %}
+    <div class="flex flex-col gap-4">
+        <figure>
+            {% load static %}
+            <img src="{{ thumbnailUrl }}" alt="thumbnail" class="block h-80 mb-3">
+            <figcaption>
+                <div class="video-title font-bold text-lg">{{videoTitle}}</div>
+                <div class="channel font-medium ">{{ytChannel}}</div>
+            </figcaption>
+        </figure>
+
+        <div>
+            <p><strong class="font-medium">Trimmed: </strong>00:32:03 - 00:33:03</p>
+            <p><strong class="font-medium">Duration: </strong>1 minute(s)</p>
+        </div>
+        
+        {% comment %} <a href="{{ downloadURL }}" download>Download here</a> {% endcomment %}
+        <a href="{{ MEDIA_URL }}downloads/{{ filename }}" download class="block text-center bg-red-600 text-white rounded-md shadow-sm text-lg p-1 hover:bg-red-700">Download here</a>
+    </div>
+
+    
+{% endblock %}
