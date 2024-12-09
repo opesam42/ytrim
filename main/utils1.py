@@ -1,10 +1,10 @@
-from django.conf import settings
-from .misc import Misc
-import yt_dlp
-from moviepy.video.io.VideoFileClip import VideoFileClip
 import os
+from django.conf import settings
+from moviepy.video.io.VideoFileClip import VideoFileClip
 from dotenv import load_dotenv
-from .bypassBot import fetchPageWithHeaders
+import yt_dlp
+from main.utilities.getproxy import test_proxy
+from .misc import Misc
 
 load_dotenv()
 
@@ -13,59 +13,81 @@ class Video:
         self.url = url
         self.output_path = os.path.join(settings.MEDIA_ROOT, "downloads/")
 
+    def youtubeLib(self):
+        # Define your custom headers for mimicking a browser
+        custom_headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36",
+            "Accept-Language": "en-US,en;q=0.5",
+        }
+
+        # Test the proxy
+        proxy = test_proxy(self.url)
+        
+        # If a proxy is found, configure it
+        if proxy:
+            proxies = {
+                "http": f"http://{proxy}",
+                "https": f"http://{proxy}",
+            }
+        else:
+            proxies = {}
+
+        # Define the visitor data and po_token
+        visitor_data = "CgtCSmxmdzlJZi15byjtkZG6BjIKCgJORxIEGgAgZw%3D%3D"  # Replace with the actual visitor_data
+        po_token = "Ijg35TfmUKF_FXSCQ6ZkiE-IU59br22MBtBVnF2RXL9w03WPfq50gn2qZZ1-oHCCdoJtkhLWc8AEoQ=="  # Replace with the actual po_token
+
+        # yt-dlp options, including custom headers, proxy, visitor data, and po_token
+        ydl_opts = {
+            'proxy': proxies.get("http"),  # Use proxy if available
+            'outtmpl': os.path.join(self.output_path, '%(title)s.%(ext)s'),  # Set download path template
+            'format': 'best',  # Download best quality video
+            'noplaylist': True,  # Download only the video, not the whole playlist
+            'headers': custom_headers,  # Custom headers to mimic a real browser
+            'extractor-args': f"youtube:visitor_data={visitor_data},youtube:po_token={po_token}",  # Pass visitor data and po_token
+            'nocheckcertificate': True,  # Bypass SSL certificate verification
+        }
+
+        return ydl_opts
+
     def getTitle(self):
         try:
-            #fetch video metadata
-            raw_page_data = fetchPageWithHeaders(self.url)
-            
-            if raw_page_data:
-                ydl_opts = {}
-                with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                    info_dict = ydl.extract_info(self.url, download=False)
-                    video_title = info_dict.get('title', 'Unknown title')
-                    return video_title
-                
+            ydl_opts = self.youtubeLib()
+            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                info_dict = ydl.extract_info(self.url, download=False)
+                video_info = [
+                    info_dict.get('title', 'Unknown'),
+                    info_dict.get('uploader', 'Unknown'),
+                    info_dict.get('thumbnail', '').replace('default.jpg', 'hqdefault.jpg')
+                ]
+                return video_info
         except Exception as e:
-            print(str(e))
+            print(f"Error retrieving video title: {str(e)}")
             return "Not working"
         
     def download(self):
+        misc = Misc()
+        # Placeholder for video title
+        video_title = "Testing download"
+        custom_name = misc.sanitize_filename(video_title)
+
         try:
-            #fetch video metadata
-            raw_page_data = fetchPageWithHeaders(self.url)
-            
-            
-            if raw_page_data:
-                # output_path = os.path.join(settings.MEDIA_ROOT, "downloads/")
-                misc = Misc()
-                custom_name = misc.sanitize_filename( self.getTitle() )
-
-                ydl_opts = {
-                    'outtmpl': f'{self.output_path}{custom_name}.%(ext)s',
-                    'concurrent_fragments': 16,  # Download in 16 simultaneous chunks (adjust based on connection)
-                    'fragment_retries': 10,  # Retry downloading fragments in case of failure
-                    'retry_max': 10,  # Max retries for the download
-
-                    # Using user-agent option in yt-dlp to simulate a real browser and bybass YouTubebot detection
-                    'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36',
-                    'cookies-from-browser': 'chrome',
-                    'cookies': os.path.join(settings.MEDIA_ROOT, "ytcookies.txt"),
-                }
-                with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                    info_dict = ydl.extract_info(self.url, download=True)
-                    video_file = ydl.prepare_filename(info_dict)
-                    return video_file
-
+            ydl_opts = self.youtubeLib()
+            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                info_dict = ydl.extract_info(self.url, download=True)
+                video_file = os.path.join(self.output_path, f"{info_dict['title']}.{info_dict['ext']}")
+                return video_file
         except Exception as e:
             print(f'Error during video download: {str(e)}')
             print(os.path.join(self.output_path))
-
+            return None
 
     def trim(self, start, end):
         # video = os.path.join(settings.MEDIA_ROOT, "downloads/", "20-Sec-Timer.mp4")
         video = self.download()
         misc = Misc()
-        custom_name = misc.sanitize_filename( self.getTitle() )
+        video_title = 'hello'
+        # video_title = self.getTitle()[0]
+        custom_name = misc.sanitize_filename( video_title )
 
         if os.path.exists(video):
             print(f'{video} found')
@@ -86,8 +108,5 @@ class Video:
         except Exception as e:
             print(f'Error trimming: {str(e)}')
 
-        os.remove(video) #delete original video after trimming
-
+        os.remove(video)  # Remove original video after trimming
         return output_file
-
-        
