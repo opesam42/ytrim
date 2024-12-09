@@ -17,8 +17,9 @@ def scraper():
                 ip = tds[0].text.strip()      # First column: IP address
                 port = tds[1].text.strip()    # Second column: Port
                 https_support = tds[6].text.strip().lower()  # Seventh column: HTTPS support
+                anonymity = tds[4].text.strip().lower()
 
-                if https_support == "yes":    # Check if HTTPS is supported
+                if https_support == "yes" and anonymity == "elite proxy":    # Check if HTTPS is supported
                     proxies_list.append(f"{ip}:{port}")
             except IndexError:
                 continue
@@ -31,9 +32,9 @@ def scraper():
 
 
 # check working proxy
-def test_proxy():
+def test_proxy(url):
     # url = "http://httpbin.org/ip"
-    url = "http://youtube.com"
+    # url = "http://youtube.com"
     proxies = scraper()
 
     for i in range(len(proxies)):
@@ -60,5 +61,3 @@ def test_proxy():
     # if none is working
     print("No working proxy found")
     return None
-
-test_proxy()

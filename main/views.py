@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.conf import settings
 from django.http import HttpResponse
-from .utils import Video
+from .utils1 import Video
 import urllib.parse
 import os
 
@@ -16,9 +16,13 @@ def index(request):
         #create an instance of the Video class
         video = Video(videoUrl)
         
-        videoTitle = video.getTitle()[0] #get title
-        ytChannel = video.getTitle()[1] #get youtube channel
-        thumbnailUrl = video.getThumbnail() #get thumbnail image
+        # metaData = video.getTitle()
+        # videoTitle = metaData[0] #get title
+        # ytChannel = metaData[1] #get youtube channel
+        # thumbnailUrl = metaData[2] #get thumbnail image
+        videoTitle = 'hello'
+        ytChannel = 'hello'
+        thumbnailUrl = 'hello'
         print(f'Downloading {videoTitle}')
         print(f'thumbnail image {thumbnailUrl}')
         
