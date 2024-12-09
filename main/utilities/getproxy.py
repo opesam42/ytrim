@@ -1,5 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
+import certifi
 
 url = 'https://free-proxy-list.net/'
 
@@ -47,7 +48,8 @@ def test_proxy(url):
             response = requests.get(
                 url,
                 timeout=10,
-                proxies = {"http":proxy, "https":proxy}
+                proxies = {"http":proxy, "https":proxy},
+                verify=certifi.where()
             )
             if response.status_code == 200:
                 print(f"Found working proxy: {proxy}")
