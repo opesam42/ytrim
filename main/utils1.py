@@ -38,6 +38,8 @@ class Video:
 
         # yt-dlp options, including custom headers, proxy, visitor data, and po_token
         ydl_opts = {
+            'timeout':60,
+            'retries': 5,
             'proxy': proxies.get("http"),  # Use proxy if available
             'outtmpl': os.path.join(self.output_path, '%(title)s.%(ext)s'),  # Set download path template
             'format': 'best',  # Download best quality video
