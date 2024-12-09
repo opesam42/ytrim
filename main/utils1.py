@@ -44,7 +44,7 @@ class Video:
             'noplaylist': True,  # Download only the video, not the whole playlist
             'headers': custom_headers,  # Custom headers to mimic a real browser
             # 'extractor-args': f"youtube:visitor_data={visitor_data},youtube:po_token={po_token}",  # Pass visitor data and po_token
-            'extractor-args': f"youtube:player-client=web,default;player-skip=webpage,configs;po_token=web+{po_token};visitor_data={visitor_data}",
+            'extractor-args': f"youtube:visitor_data={visitor_data}",
             'nocheckcertificate': True,  # Bypass SSL certificate verification
         }
 
