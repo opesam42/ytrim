@@ -1,7 +1,6 @@
 import os
 from django.conf import settings
-from moviepy import *
-# from moviepy.video.io.VideoFileClip import VideoFileClip
+import ffmpeg
 import yt_dlp
 from main.utilities.getproxy import test_proxy
 from .misc import Misc
@@ -107,13 +106,8 @@ class Video:
         output_file = os.path.join(settings.MEDIA_ROOT, "downloads/", custom_name + '_trimmed' + extension)
 
         try:
-            with VideoFileClip(video) as clip:
-                clip = clip.with_subclip(start, end)
-                clip.write_videofile(
-                    output_file, 
-                    codec="libx264",
-                    audio_codec='aac'
-                )
+            duration = end - start
+            ffmpeg.input(video, ss=start, t=duration).output(output_file).run()
         except Exception as e:
             print(f'Error trimming: {str(e)}')
 

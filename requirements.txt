@@ -6,6 +6,7 @@ colorama==0.4.6
 decorator==5.1.1
 Django==5.1.4
 fake-useragent==1.5.1
+ffmpeg_python==0.2.0
 gunicorn==23.0.0
 idna==3.10
 imageio==2.36.1
@@ -17,9 +18,7 @@ pathvalidate==3.2.1
 pillow==10.4.0
 proglog==0.1.10
 python-dotenv==1.0.1
-pytube==15.0.0
-pytubefix==8.5.2
-requests==2.32.3
+Requests==2.32.3
 setuptools==75.6.0
 soupsieve==2.6
 sqlparse==0.5.2
@@ -27,4 +26,4 @@ tqdm==4.67.1
 tzdata==2024.2
 urllib3==2.2.3
 whitenoise==6.7.0
-yt-dlp==2024.12.6
+yt_dlp==2024.12.13
