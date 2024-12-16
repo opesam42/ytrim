@@ -36,10 +36,8 @@ class Video:
 
         # yt-dlp options, including custom headers, proxy, visitor data, and po_token
         ydl_opts = {
-            'timeout':60,
-            'retries': 5,
             'proxy': proxies.get("http"),  # Use proxy if available
-            'outtmpl': os.path.join(self.output_path, '%(title)s.%(ext)s'),  # Set download path template
+            # 'outtmpl': os.path.join(self.output_path, '%(title)s.%(ext)s'),  # Set download path template
             'format': 'best',  # Download best quality video
             'noplaylist': True,  # Download only the video, not the whole playlist
             'headers': custom_headers,  # Custom headers to mimic a real browser
@@ -74,11 +72,16 @@ class Video:
             try:
                 ydl_opts = self.youtubeLib()
                 with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                    info_dict = ydl.extract_info(self.url, download=True)
-                    sanitized_title = sanitize_filename(info_dict['title']) #clean title before storing
-                    video_file = os.path.join(self.output_path, f"{sanitized_title}.{info_dict['ext']}")
+                    info_dict = ydl.extract_info(self.url, download=False) #extract video, but dont download
+                    sanitized_title = sanitize_filename(info_dict['title']) #clean title 
+                    ydl_opts['outtmpl'] = os.path.join(self.output_path, f"{sanitized_title}.%(ext)s")
 
+                    with yt_dlp.YoutubeDL(ydl_opts) as ydl_updated:
+                        ydl_updated.download([self.url])
+
+                    video_file = os.path.join(self.output_path, f"{sanitized_title}.{info_dict['ext']}")
                     return video_file
+                
             except Exception as e:
                 attempts += 1
                 print(f'Error during video download {attempts}/{max_retries}: {str(e)}')
