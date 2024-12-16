@@ -1,10 +1,8 @@
-import ffmpeg
 from django.conf import settings
 import os
 import datetime
 
-filename1 = os.path.join(settings.MEDIA_ROOT, "downloads/Cliffe Knechtle：  is the Old Testament God Different From the New Testament God #shorts.mp4")
-output_file = os.path.join(settings.MEDIA_ROOT, "downloads/test.mp4")
+output_path = os.path.join(settings.MEDIA_ROOT, "downloads/")
 
 def getMinuteDiff(file): 
     unixTime = os.path.getmtime(file) #get timestamp for last time file was modified
@@ -23,9 +21,3 @@ def deleteFiles(file, minutes=36737):
         print(f'{file} successfully deleted')
     else:
         print(f'{file} can''t be deleted')
-    
-    
-output_path = os.path.join(settings.MEDIA_ROOT, "downloads/")
-files = os.listdir(output_path)
-for file in files:
-    print (f'{os.path.join(output_path, file)}')
