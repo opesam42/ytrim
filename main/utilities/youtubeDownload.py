@@ -81,6 +81,7 @@ class Video:
                     info_dict = ydl.extract_info(self.url, download=True)
                     sanitized_title = misc.sanitize_filename(info_dict['title'])
                     video_file = os.path.join(self.output_path, f"{sanitized_title}.{info_dict['ext']}")
+                    print(f'The video file path is {video_file}') #logging
                     return video_file
             except Exception as e:
                 attempts += 1
