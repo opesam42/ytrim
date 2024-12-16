@@ -1,6 +1,7 @@
 import os
 from django.conf import settings
-from moviepy.video.io.VideoFileClip import VideoFileClip
+from moviepy import *
+# from moviepy.video.io.VideoFileClip import VideoFileClip
 import yt_dlp
 from main.utilities.getproxy import test_proxy
 from .misc import Misc
