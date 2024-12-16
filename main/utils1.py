@@ -1,12 +1,10 @@
 import os
 from django.conf import settings
 from moviepy.video.io.VideoFileClip import VideoFileClip
-from dotenv import load_dotenv
 import yt_dlp
 from main.utilities.getproxy import test_proxy
 from .misc import Misc
 
-load_dotenv()
 
 class Video:
     def __init__(self, url):
@@ -45,7 +43,8 @@ class Video:
             'format': 'best',  # Download best quality video
             'noplaylist': True,  # Download only the video, not the whole playlist
             'headers': custom_headers,  # Custom headers to mimic a real browser
-            # 'extractor-args': f"youtube:visitor_data={visitor_data},youtube:po_token={po_token}",  # Pass visitor data and po_token
+            # 'extractor-args': 
+            # f"youtube:visitor_data={visitor_data},youtube:po_token={po_token}",  # Pass visitor data and po_token
             'extractor-args': f"youtube:visitor_data={visitor_data}",
             'nocheckcertificate': True,  # Bypass SSL certificate verification
         }
@@ -67,22 +66,28 @@ class Video:
             print(f"Error retrieving video title: {str(e)}")
             return "Not working"
         
-    def download(self):
+    def download(self, max_retries = 5):
         misc = Misc()
         # Placeholder for video title
         video_title = "Testing download"
         custom_name = misc.sanitize_filename(video_title)
+         
+        attempts = 0 #counter for retries
 
-        try:
-            ydl_opts = self.youtubeLib()
-            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                info_dict = ydl.extract_info(self.url, download=True)
-                video_file = os.path.join(self.output_path, f"{info_dict['title']}.{info_dict['ext']}")
-                return video_file
-        except Exception as e:
-            print(f'Error during video download: {str(e)}')
-            print(os.path.join(self.output_path))
-            return None
+        while attempts < max_retries:
+            try:
+                ydl_opts = self.youtubeLib()
+                with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                    info_dict = ydl.extract_info(self.url, download=True)
+                    video_file = os.path.join(self.output_path, f"{info_dict['title']}.{info_dict['ext']}")
+                    return video_file
+            except Exception as e:
+                attempts += 1
+                print(f'Error during video download {attempts}/{max_retries}: {str(e)}')
+                
+            
+        print(f'Max retries reached. Download failed')
+        return None
 
     def trim(self, start, end):
         # video = os.path.join(settings.MEDIA_ROOT, "downloads/", "20-Sec-Timer.mp4")
