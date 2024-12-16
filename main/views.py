@@ -12,18 +12,21 @@ def index(request):
 
     # delete files that are have been downloaded more than an hour ago
     output_path = os.path.join(settings.MEDIA_ROOT, "downloads/")
-    files = os.listdir(output_path) #return list of downloaded files
-    if files:
-        for file in files:
-            try:
-                print(f'Checking {file}')
-                file = os.path.join(output_path, file)
-                deleteFiles(file, 60) #delete file which stay longer than 60 minutes
-            except:
-                print(f'Error checking {file}')
-                continue
-    else: 
-        print('No file in download to check')
+    if os.path.exists(output_path):
+        files = os.listdir(output_path)  #return list of downloaded files
+        if files:
+            for file in files:
+                try:
+                    print(f'Checking {file}')
+                    file = os.path.join(output_path, file)
+                    deleteFiles(file, 60) #delete file which stay longer than 60 minutes
+                except:
+                    print(f'Error checking {file}')
+                    continue
+        else: 
+            print('No file in download to check')
+    else:
+        print('Download directory does not exist')
 
     if request.method == 'POST':
         videoUrl = request.POST.get('ylink')
