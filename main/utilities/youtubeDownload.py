@@ -3,7 +3,7 @@ from django.conf import settings
 import ffmpeg
 import yt_dlp
 from main.utilities.getproxy import test_proxy
-from .misc import Misc
+from .misc import sanitize_filename, get_file_extension
 
 
 class Video:
@@ -67,11 +67,7 @@ class Video:
             return "Not working"
         
     def download(self, max_retries = 5):
-        misc = Misc()
-        # Placeholder for video title
-        video_title = "Testing download"
-        custom_name = misc.sanitize_filename(video_title)
-         
+       
         attempts = 0 #counter for retries
 
         while attempts < max_retries:
@@ -79,7 +75,9 @@ class Video:
                 ydl_opts = self.youtubeLib()
                 with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                     info_dict = ydl.extract_info(self.url, download=True)
-                    video_file = misc.make_url_safe( os.path.join(self.output_path, f"{info_dict['title']}.{info_dict['ext']}") )
+                    sanitized_title = sanitize_filename(info_dict['title']) #clean title before storing
+                    video_file = os.path.join(self.output_path, f"{sanitized_title}.{info_dict['ext']}")
+
                     return video_file
             except Exception as e:
                 attempts += 1
@@ -92,17 +90,16 @@ class Video:
     def trim(self, start, end):
         # video = os.path.join(settings.MEDIA_ROOT, "downloads/", "20-Sec-Timer.mp4")
         video = self.download()
-        misc = Misc()
         video_title = 'hello'
         # video_title = self.getTitle()[0]
-        custom_name = misc.sanitize_filename( video_title )
+        custom_name = sanitize_filename( video_title )
 
         if os.path.exists(video):
             print(f'{video} found')
         else:
             print("Not found")
         
-        extension = misc.get_file_extension(video) #get extension of file
+        extension = get_file_extension(video) #get extension of file
         output_file = os.path.join(settings.MEDIA_ROOT, "downloads/", custom_name + '_trimmed' + extension)
 
         try:
