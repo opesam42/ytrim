@@ -79,7 +79,7 @@ class Video:
                 ydl_opts = self.youtubeLib()
                 with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                     info_dict = ydl.extract_info(self.url, download=True)
-                    video_file = misc.make_url_safe( os.path.join(self.output_path, f"{info_dict['title']}.{info_dict['ext']}") )
+                    video_file = os.path.join(self.output_path, f"{misc.sanitize_filename(info_dict['title'])}.{info_dict['ext']}") 
                     return video_file
             except Exception as e:
                 attempts += 1
