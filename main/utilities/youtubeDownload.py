@@ -3,7 +3,7 @@ from django.conf import settings
 import ffmpeg
 import yt_dlp
 from main.utilities.getproxy import test_proxy
-from .misc import sanitize_filename, get_file_extension
+from .misc import sanitize_string, get_file_extension
 
 
 class Video:
@@ -73,7 +73,7 @@ class Video:
                 ydl_opts = self.youtubeLib()
                 with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                     info_dict = ydl.extract_info(self.url, download=False) #extract video, but dont download
-                    sanitized_title = sanitize_filename(info_dict['title']) #clean title 
+                    sanitized_title = sanitize_string(info_dict['title']) #clean title 
                     ydl_opts['outtmpl'] = os.path.join(self.output_path, f"{sanitized_title}.%(ext)s")
 
                     with yt_dlp.YoutubeDL(ydl_opts) as ydl_updated:
@@ -95,7 +95,7 @@ class Video:
         video = self.download()
         video_title = 'hello'
         # video_title = self.getTitle()[0]
-        custom_name = sanitize_filename( video_title )
+        custom_name = sanitize_string( video_title )
 
         if os.path.exists(video):
             print(f'{video} found')

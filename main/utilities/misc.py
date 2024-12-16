@@ -8,7 +8,7 @@ def get_file_extension(file):
     name, extension = os.path.splitext(file)
     return extension
 
-def sanitize_filename(fname):
+def sanitize_string(fname):
     fname = re.sub(r'[^\w\s-]', '', fname) #remove all characters except alphanumerals
     fname = re.sub(r'[-\s]+', '-', fname)  # Convert runs of spaces/hyphens to single hyphen
     return sanitize_filename(fname)
