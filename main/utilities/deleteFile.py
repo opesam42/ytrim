@@ -13,7 +13,7 @@ def getMinuteDiff(file):
     minuteDiff = timeDiff.total_seconds()/60 #return difference in minutes
     return minuteDiff
 
-def deleteFiles(file, minutes=36737):
+def deleteFiles(file, minutes=60):
     minuteDiff = getMinuteDiff(file)
     
     if(minuteDiff >= minutes):
