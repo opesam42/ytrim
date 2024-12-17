@@ -1,7 +1,14 @@
-from .utilities.misc import Misc
+import os
 
-misc = Misc()
-
-url = misc.sanitize_filename('How are  you doing brother 2? - } Bython | ')
-
-print(url)
+def checkDirectory(filename, dir):
+    if not os.path.exists(dir):
+        filename = filename
+    if os.path.exists(dir):
+        files = os.listdir(dir)
+    if not files:
+        filename = filename
+    else:
+        for file in files:
+            if file == filename:
+                i = 1
+                filename = f'{filename}{i}'

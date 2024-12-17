@@ -3,7 +3,7 @@ from django.conf import settings
 import ffmpeg
 import yt_dlp
 from main.utilities.getproxy import test_proxy
-from .misc import sanitize_string, get_file_extension
+from .helper_func import sanitize_string, get_file_extension, get_file_name_no_extension
 
 
 class Video:
@@ -79,7 +79,8 @@ class Video:
                     with yt_dlp.YoutubeDL(ydl_opts) as ydl_updated:
                         ydl_updated.download([self.url])
 
-                    video_file = os.path.join(self.output_path, f"{sanitized_title}.{info_dict['ext']}")
+                    # video_file = os.path.join(self.output_path, f"{sanitized_title}.{info_dict['ext']}")
+                    video_file = os.path.join(self.output_path, f"{sanitized_title}.mp4")
                     return video_file
                 
             except Exception as e:
@@ -93,7 +94,7 @@ class Video:
     def trim(self, start, end):
         # video = os.path.join(settings.MEDIA_ROOT, "downloads/", "20-Sec-Timer.mp4")
         video = self.download()
-        video_title = 'hello'
+        video_title = get_file_name_no_extension(video) #extract filename discarding the path and extension
         # video_title = self.getTitle()[0]
         custom_name = sanitize_string( video_title )
 

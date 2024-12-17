@@ -2,11 +2,15 @@ import os
 from pathvalidate import sanitize_filename
 from urllib.parse import urljoin, quote
 import re
+from pathlib import Path
 
 def get_file_extension(file):
 # Get the file name and extension
     name, extension = os.path.splitext(file)
     return extension
+
+def get_file_name_no_extension(file):
+    return Path(file).stem
 
 def sanitize_string(fname):
     fname = re.sub(r'[^\w\s-]', '', fname) #remove all characters except alphanumerals
