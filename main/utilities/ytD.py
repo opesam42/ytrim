@@ -1,6 +1,7 @@
 from django.conf import settings
 from .helper_func import sanitize_string, get_file_extension, get_file_name_no_extension
 import ffmpeg
+from main.utilities.getproxy import test_proxy
 from pytubefix import YouTube
 from pytubefix.cli import on_progress
 import os
@@ -19,10 +20,28 @@ class Video:
         self.output_path = os.path.join(settings.MEDIA_ROOT, "downloads/")
 
     def youtubeLib(self):
+        custom_headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36",
+            "Accept-Language": "en-US,en;q=0.5",
+        }
+
+        # Test the proxy
+        proxy = test_proxy(self.url)
+        
+        # If a proxy is found, configure it
+        if proxy:
+            proxies = {
+                "http": f"http://{proxy}",
+                "https": f"http://{proxy}",
+            }
+        else:
+            proxies = {}
+
         return YouTube( 
             self.url,
             on_progress_callback=on_progress,
             use_po_token=True,
+            proxies=proxies,
             token_file=os.path.join(settings.MEDIA_ROOT, "file.json")
         )
 
