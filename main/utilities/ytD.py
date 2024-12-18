@@ -8,12 +8,17 @@ import os
 # from requests import get
 import requests
 from dotenv import load_dotenv
+from typing import Callable, Tuple, Optional
 
 load_dotenv()
 
 # https://github.com/JuanBindez/pytubefix/issues/226 for generating token easily
 # https://www.npmjs.com/package/youtube-po-token-generator npm package for automating youtube po-token
 
+po_token_verifier: Optional[Callable[[], Tuple[str, str]]] = None
+def example_verifier() -> Tuple[str, str]:
+    return "Ijg35TfmUKF_FXSCQ6ZkiE-IU59br22MBtBVnF2RXL9w03WPfq50gn2qZZ1-oHCCdoJtkhLWc8AEoQ==", "CgtCSmxmdzlJZi15byjtkZG6BjIKCgJORxIEGgAgZw%3D%3D"
+po_token_verify = example_verifier
 class Video:
     def __init__(self, url):
         self.url = url
@@ -42,6 +47,7 @@ class Video:
             on_progress_callback=on_progress,
             use_po_token=True,
             proxies=proxies,
+            po_token_verifier=po_token_verify,
             token_file=os.path.join(settings.MEDIA_ROOT, "file.json")
         )
 
