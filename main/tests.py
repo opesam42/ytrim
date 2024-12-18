@@ -1,14 +1,7 @@
-import os
+import pafy
 
-def checkDirectory(filename, dir):
-    if not os.path.exists(dir):
-        filename = filename
-    if os.path.exists(dir):
-        files = os.listdir(dir)
-    if not files:
-        filename = filename
-    else:
-        for file in files:
-            if file == filename:
-                i = 1
-                filename = f'{filename}{i}'
+url = 'https://www.youtube.com/watch?v=dyHp0TovnUQ'
+video = pafy.new(url)
+
+# print title 
+print(video.title) 
