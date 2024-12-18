@@ -17,6 +17,7 @@ packaging==24.2
 pathvalidate==3.2.1
 pillow==10.4.0
 proglog==0.1.10
+pytubefix==8.5.2
 python-dotenv==1.0.1
 Requests==2.32.3
 setuptools==75.6.0
