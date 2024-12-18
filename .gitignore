@@ -4,3 +4,4 @@
 *.mp4
 requirements1.txt
 /venv
+/media/oauth.json
