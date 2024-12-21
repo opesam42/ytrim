@@ -47,6 +47,7 @@ class Video:
             on_progress_callback=on_progress,
             use_po_token=True,
             proxies=proxies,
+            
             po_token_verifier=po_token_verify,
             token_file=os.path.join(settings.MEDIA_ROOT, "file.json")
         )

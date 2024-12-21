@@ -1,7 +1,7 @@
-import pafy
 
+import m3u8
 url = 'https://www.youtube.com/watch?v=dyHp0TovnUQ'
-video = pafy.new(url)
-
-# print title 
-print(video.title) 
+playlist = m3u8.load(url)
+for segment in playlist.segments:
+    with open('video.mp4', 'wb') as file:
+        file.write(segment.uri)
