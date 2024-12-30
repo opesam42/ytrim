@@ -9,7 +9,7 @@
             <img src="{{ thumbnailUrl }}" alt="thumbnail" class="block h-80 mb-3">
             <figcaption>
                 <div class="video-title font-bold text-lg">{{videoTitle}}</div>
-                <div class="channel font-medium ">{{ytChannel}}</div>
+                <div class="channel font-medium ">Video channel</div>
             </figcaption>
         </figure>
 
@@ -22,5 +22,18 @@
         <a href="{{ MEDIA_URL }}downloads/{{ filename }}" download class="block text-center bg-red-600 text-white rounded-md shadow-sm text-lg p-1 hover:bg-red-700">Download here</a>
     </div>
 
-    
+    <script>
+        const thumbnailFig = document.querySelector('figure img');
+        const videoTitleDiv = document.querySelector('.video-title')
+
+        const storedVideoData = localStorage.getItem('videoData')
+        videoData = JSON.parse(storedVideoData)    // convert to object
+        thumbnailUrl = videoData.thumbnail
+        videoTitle = videoData.videoTitle
+
+        thumbnailFig.src = thumbnailUrl
+        videoTitleDiv.innerText = videoTitle
+    </script>
 {% endblock %}
+
+   

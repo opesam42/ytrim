@@ -5,6 +5,8 @@ import yt_dlp
 from main.utilities.getproxy import test_proxy
 from .helper_func import sanitize_string, get_file_extension, get_file_name_no_extension
 
+# https://github.com/JuanBindez/pytubefix/issues/226 for generating token easily
+# https://www.npmjs.com/package/youtube-po-token-generator npm package for automating youtube po-token
 
 class Video:
     def __init__(self, url):
@@ -31,17 +33,16 @@ class Video:
             proxies = {}
 
         # Define the visitor data and po_token
-        visitor_data = "CgtCSmxmdzlJZi15byjtkZG6BjIKCgJORxIEGgAgZw%3D%3D"  # Replace with the actual visitor_data
-        po_token = "Ijg35TfmUKF_FXSCQ6ZkiE-IU59br22MBtBVnF2RXL9w03WPfq50gn2qZZ1-oHCCdoJtkhLWc8AEoQ=="  # Replace with the actual po_token
+        visitor_data = settings.VISITOR_DATA
+        po_token = settings.PO_TOKEN
 
-        # yt-dlp options, including custom headers, proxy, visitor data, and po_token
+       
         ydl_opts = {
             'cookies': os.path.join(settings.MEDIA_ROOT, "cookies.txt"),
-            'proxy': proxies.get("http"),  # Use proxy if available
-            # 'outtmpl': os.path.join(self.output_path, '%(title)s.%(ext)s'),  # Set download path template
-            'format': 'best',  # Download best quality video
-            'noplaylist': True,  # Download only the video, not the whole playlist
-            'headers': custom_headers,  # Custom headers to mimic a real browser
+            'proxy': proxies.get("http"),
+            'format': 'best',
+            'noplaylist': True,
+            'headers': custom_headers,
             # 'extractor-args': 
             # f"youtube:visitor_data={visitor_data},youtube:po_token={po_token}",  # Pass visitor data and po_token
             'extractor-args': f"youtube:visitor_data={visitor_data}",

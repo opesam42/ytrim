@@ -4,22 +4,23 @@
 
 {% block main-content %}
 
-        <form method="post" class="flex flex-col gap-4">
+        <form method="post" id="ytform" class="flex flex-col gap-4">
             {% csrf_token %}
             <fieldset class="flex flex-col gap-1">
                 <label for="ylink" class="text-sm font-medium">Youtube Link</label>
-                <input type="url" name="ylink" placeholder="Enter Youtube Video Link" class="block border rounded-md border-gray-800 p-1">
+                <input onblur="api()" type="url" name="ylink" placeholder="Enter Youtube Video Link" class="block border rounded-md border-gray-800 p-1">
+                <div id="stateLoader"></div>
             </fieldset>
 
             <fieldset class="flex justify-between">
                 <div class="w-1/3 flex flex-col gap-1">
                     <label for="s-time" class="text-sm font-medium">Start Time</label>
-                    <input type="text" name="s-time" placeholder="HH:MM:SS" class="block border rounded-md border-gray-800 p-1">
+                    <input onblur="getFormattedTime(this, this.value)" type="text" name="s-time" placeholder="HH:MM:SS" class="block border rounded-md border-gray-800 p-1">
                 </div>
 
                 <div class="w-1/3 flex flex-col gap-1">
                     <label for="e-time" class="text-sm font-medium">End Time</label>
-                    <input type="text" name="e-time" placeholder="HH:MM:SS" class="block border rounded-md border-gray-800 p-1">
+                    <input onblur="getFormattedTime(this, this.value)" type="text" name="e-time" placeholder="HH:MM:SS" class="block border rounded-md border-gray-800 p-1">
                 </div>
             </fieldset>
             
@@ -28,4 +29,172 @@
             {% comment %} <img src="https://i.ytimg.com/vi/eB2aY7qxLFE/sddefault.jpg?sqp=-oaymwEmCIAFEOAD8quKqQMa8AEB-AG2CIACgA-KAgwIABABGD4gYChlMA8=&rs=AOn4CLBFGb8BwxLvZKrS7dRlI3D-om41og"> {% endcomment %}
             
         </form>
+
+        <script>
+            // convert the time to a formatted time in hh:mm:ss
+            function getFormattedTime(inputElement, time){
+                if(time.includes(':')){
+                    stripTime = time.replace(/:/g, '') //remove :
+                    padTime = stripTime.padStart(6, '0') // add 0 to the string to make it 6 figures
+                    hour = padTime.slice(0,2)
+                    minute = padTime.slice(2,4)
+                    second = padTime.slice(4,6)
+                    
+                    formattedTime = `${hour}:${minute}:${second}`
+                    inputElement.value = formattedTime
+                    // return formattedTime
+                } else{
+                    inputElement.value = time
+                    // return time
+                }   
+            }
+
+            function convertToSec(time){
+                if(time.includes(':')){
+                    stripTime = time.replace(/:/g, '') 
+                
+                    hourToSec = stripTime.slice(0,2) * 3600
+                    minToSec = stripTime.slice(2,4) * 60
+                    sec = stripTime.slice(4,6)
+
+                    totalSeconds = Number(hourToSec) + Number(minToSec) + Number(sec)
+                    return totalSeconds                    
+                }
+                return time
+            }
+
+            // convert youtube ISO time e.g. PT5M31S to normal time
+            function parseDuration(duration) {
+                const regex = /PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/;
+                const matches = regex.exec(duration);
+                
+                let hours = 0, minutes = 0, seconds = 0;
+                
+                if (matches[1]) hours = parseInt(matches[1], 10);
+                if (matches[2]) minutes = parseInt(matches[2], 10);
+                if (matches[3]) seconds = parseInt(matches[3], 10);
+
+                hoursToSec = hours * 3600; minutesToSec = minutes * 60; 
+                
+                formattedTime = hoursToSec + minutesToSec + seconds;
+                return formattedTime
+            }
+
+
+            const stateLoader = document.getElementById('stateLoader')
+            const youtubeLinkInput = document.getElementsByName('ylink')[0]
+            
+            function getVideoId(){
+                const url = youtubeLinkInput.value
+                const regex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:.*[?&]v=|embed\/|v\/|shorts\/)|youtu\.be\/)([\w-]{11})/;
+                const match = url.match(regex);
+                const videoID = match ? match[1]:null
+
+                if(videoID) {
+                    console.log("Right link", videoID)
+                    return videoID
+                }
+                else {
+                    console.log("Wrong link", videoID)
+                    stateLoader.innerHTML = "<p style='color:red; font-weight: 600;'>Hello</p>"
+                    return null
+                }
+            }
+
+            function api(){
+                if(youtubeLinkInput.value.trim().length > 0){
+                    const apiKey = "{{ API_KEY }}";
+                    // const apiKey = 'AIzaSyA3IClI_t8N0lXYWnmZWsGBR1RtI6C8_xs'; // Replace with your API key
+                    const videoId = getVideoId() 
+                    
+                    // stateLoader.innerText = "Loading..."
+                    fetch(`/youtube-api/?videoId=${videoId}`)
+                        .then(response => {
+                            return response.json()  
+                        }
+                        )
+                        .then(data => {
+                            if (data.items && data.items.length > 0){
+                                videoTitle = data.items[0].snippet.title
+                                duration = data.items[0].contentDetails.duration;
+                                formattedDuration = parseDuration(duration)
+                                thumbnail = data.items[0].snippet.thumbnails.medium.url
+
+                                stateLoader.innerText = videoTitle
+                                // return an object
+                                const videoData = {
+                                    videoTitle: videoTitle,
+                                    duration: formattedDuration,
+                                    thumbnail: thumbnail
+                                }
+
+                                // store data in localstorage
+                                localStorage.setItem('videoData', JSON.stringify(videoData))
+                            }
+                            else{
+                                throw new Error("No video found for the provided ID.");
+                            }
+                        })
+                        .catch(err => console.log("Error", err)); // Log the video title
+                    }
+                }
+
+                
+
+                const form = document.getElementById('ytform')
+                form.addEventListener('submit', (e)=>{
+                    if (youtubeLinkInput.value.trim().length === 0){
+                        e.preventDefault()
+                        console.log('empty')
+                    }
+
+                    if(getVideoId == null){
+                        e.preventDefault()
+                        stateLoader.innerHTML = "<p style='color:red; font-weight: 600;'>Hello</p>"
+                    }
+
+                    startTime = document.getElementsByName('s-time')[0].value
+                    endTime = document.getElementsByName('e-time')[0].value
+
+                    startTimeSec = convertToSec(startTime)
+                    endTImeSec = convertToSec(endTime)
+                    
+
+                    // check if time is a number
+                    if(isNaN(startTimeSec) || isNaN(endTImeSec)){
+                        e.preventDefault()
+                        console.log("Invalid Time")
+                    }
+
+                    // check is starttime is less that endtime
+                    if(endTImeSec < startTimeSec){
+                        e.preventDefault()
+                        console.log("End time is greater than start time")
+                    }
+
+                    if(endTImeSec.length > 0 && startTimeSec.length == 0){
+                        startTimeSec = 0
+                    }
+                    if(startTimeSec.length > 0 && endTimeSec.length == 0){
+                        storedVideoData = localStorage.getItem('videoData')
+                        videoData = JSON.parse(storedVideoData)    // convert to object
+                        console.log(videoData)
+                        duration = videoData.duration
+                        if(duration){
+                            endTImeSec = duration
+                        } else{
+                            e.preventDefault()
+                            console.log('Please enter end trim')
+                        }
+                    }
+
+                    console.log(startTimeSec, endTImeSec)
+                    
+                })
+                
+                
+            
+// delete localstorage on submission
+// localStorage.removeItem('videoData');
+        </script>
 {% endblock %}

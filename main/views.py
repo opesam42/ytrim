@@ -1,16 +1,19 @@
 from django.shortcuts import render, redirect
 from django.conf import settings
+from django.http import JsonResponse
 from django.http import HttpResponse
 from .utilities.youtubeDownload import Video
+# from .utilities.youtube2 import Video
 # from .utilities.ytD import Video
 from .utilities.deleteFile import deleteFiles
 import urllib.parse
 import os
+import requests
+
 
 
 # Create your views here.
 def index(request):
-
     # delete files that are have been downloaded more than an hour ago
     output_path = os.path.join(settings.MEDIA_ROOT, "downloads/")
     if os.path.exists(output_path):
@@ -35,16 +38,8 @@ def index(request):
         trimEnd = request.POST.get('e-time')
         #create an instance of the Video class
         video = Video(videoUrl)
-        
-        # metaData = video.getTitle()
-        # videoTitle = metaData[0] #get title
-        # ytChannel = metaData[1] #get youtube channel
-        # thumbnailUrl = metaData[2] #get thumbnail image
-        videoTitle = 'hello'
-        ytChannel = 'hello'
-        thumbnailUrl = 'hello'
-        print(f'Downloading {videoTitle}')
-        print(f'thumbnail image {thumbnailUrl}')
+
+        print(f'Downloading video')
         
         # trim video and get link
         if(trimStart=="") and (trimEnd==""):
@@ -56,10 +51,12 @@ def index(request):
                 download_link = video.trim( int(trimStart), int(trimEnd) ) #for seconds only format
 
         encoded_link = urllib.parse.quote(download_link)
-        return redirect(f'download?link={encoded_link}&videoTitle={videoTitle}&ytChannel={ytChannel}&thumbnail={thumbnailUrl}')
+        return redirect(f'download?link={encoded_link}')
 
     
-    return render(request, 'main/index.html')
+    return render(request, 'main/index.html', {
+        'API_KEY': settings.API_KEY,
+    })
 
 def download(request):
     download_link = request.GET.get('link')
@@ -67,18 +64,24 @@ def download(request):
         decoded_link = urllib.parse.unquote(download_link)
         filename = os.path.basename(decoded_link)
 
-        # get other parameters
-        videoTitle = request.GET.get('videoTitle')
-        ytChannel = request.GET.get('ytChannel')
-        thumbnailUrl=request.GET.get('thumbnail')
         return render(request, 'main/download.html', {
             'downloadURL': download_link,
             'filename': filename,
             'MEDIA_URL': settings.MEDIA_URL,
-
-            'videoTitle':videoTitle,
-            'ytChannel': ytChannel,
-            'thumbnailUrl': thumbnailUrl,
             })
     else:
         return redirect(index)
+    
+def youtube_api(request):
+    video_id = request.GET.get('videoId')
+    if not video_id:
+        return JsonResponse({'error': 'No videoid provided'}, status=400)
+
+    api_key = settings.API_KEY
+    url = f'https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails&id={video_id}&key={api_key}' 
+    
+    response = requests.get(url)
+    if response.status_code == 200:
+        return JsonResponse(response.json())
+    else:
+        return JsonResponse({'error': 'Failed to fetch video details'}, status=500)
